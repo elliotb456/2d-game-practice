@@ -3,6 +3,9 @@ using System;
 
 public partial class Player : Area2D
 {
+	[Signal]
+	public delegate void HitEventHandler(); // Creating the hit signal that the player will send out when in contact with an enemy
+
 	[Export]
     public int Speed { get; set; } = 400; // How fast the player will move (pixels/sec).
 
@@ -13,6 +16,7 @@ public partial class Player : Area2D
 	public override void _Ready()
 	{
 		ScreenSize = GetViewportRect().Size;
+		Hide();
 	}
 
 
@@ -77,5 +81,23 @@ public partial class Player : Area2D
 			animatedSprite2D.Animation = "up"; 
 			animatedSprite2D.FlipV = velocity.Y > 0;
 		}
+	}
+
+	// Function for collision logic for the player
+	public void OnBodyEntered(Node2D body)
+	{
+		Hide(); // Player Disappears after being hit
+		EmitSignal(SignalName.Hit);
+
+		GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+	}
+
+
+	// Function to reset the player when starting a new game
+	public void Start(Vector2 position)
+	{
+		Position = position;
+		Show();
+		GetNode<CollisionShape2D>("CollisionShape2D").Disabled = false;
 	}
 }
