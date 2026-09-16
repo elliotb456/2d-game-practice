@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="2D Game Practice"
-run/main_scene="uid://c5aihmcio5jin"
+run/main_scene="uid://cgths7mif44o0"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 

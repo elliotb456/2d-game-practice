@@ -47,4 +47,4 @@ animation = &"up"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1140555343]
 shape = SubResource("CapsuleShape2D_dxwi8")
 
-[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_entered" from="." to="." method="OnBodyEntered"]
