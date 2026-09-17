@@ -8,12 +8,24 @@ public partial class Main : Node2D
 	public PackedScene MobScene { get; set; }
 
 	private int _score;
+	private AudioStreamPlayer2D _music;
+	private AudioStreamPlayer2D _deathSound;
+
+
+	// Called when the node enters the scene tree for the first time.
+	public override void _Ready()
+	{
+		_music = GetNode<AudioStreamPlayer2D>("Music");
+		_deathSound = GetNode<AudioStreamPlayer2D>("DeathSound");
+	}
 
 
 	public void GameOver()
 	{
 		GetNode<Timer>("MobTimer").Stop();
 		GetNode<Timer>("ScoreTimer").Stop();
+		_music.Stop();
+		_deathSound.Play();
 
 		GetNode<Hud>("HUD").ShowGameOver();
 	
@@ -23,6 +35,7 @@ public partial class Main : Node2D
 	public void NewGame()
 	{
 		_score = 0;
+		_music.Play();
 
 		var player = GetNode<Player>("Player");
 		var startPostition = GetNode<Marker2D>("StartPosition");
@@ -54,7 +67,7 @@ public partial class Main : Node2D
 
 
 	private void OnMobTimerTimeout()
-{
+	{
     // Create a new instance of the Mob scene.
     Mob mob = MobScene.Instantiate<Mob>();
 
@@ -78,26 +91,6 @@ public partial class Main : Node2D
 
     // Spawn the mob by adding it to the Main scene.
     AddChild(mob);
-}
-
-
-
-
-
-
-
-
-
-
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
 	}
 }
-
 	
