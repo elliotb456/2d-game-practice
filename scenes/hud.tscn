@@ -1,24 +1,10 @@
 [gd_scene format=3 uid="uid://46njrhmokhcw"]
 
 [ext_resource type="FontFile" uid="uid://cgnvk7prf5e5b" path="res://fonts/Xolonium-Regular.ttf" id="1_ahhtf"]
+[ext_resource type="Script" uid="uid://bywecwk4c2exk" path="res://scripts/Hud.cs" id="1_oo0fn"]
 
 [node name="HUD" type="CanvasLayer" unique_id=1459371478]
-
-[node name="StartButton" type="Button" parent="." unique_id=1186312085]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -100.0
-offset_top = -140.0
-offset_right = 100.0
-offset_bottom = -40.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("1_ahhtf")
-theme_override_font_sizes/font_size = 64
-text = "Start"
+script = ExtResource("1_oo0fn")
 
 [node name="ScoreLabel" type="Label" parent="." unique_id=2013225026]
 anchors_preset = 5
@@ -53,4 +39,24 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
+[node name="StartButton" type="Button" parent="." unique_id=1186312085]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -140.0
+offset_right = 100.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("1_ahhtf")
+theme_override_font_sizes/font_size = 64
+text = "Start"
+
 [node name="MessageTimer" type="Timer" parent="." unique_id=1323686972]
+one_shot = true
+
+[connection signal="pressed" from="StartButton" to="." method="OnStartButtonPressed"]
+[connection signal="timeout" from="MessageTimer" to="." method="OnMessageTimerTimeout"]

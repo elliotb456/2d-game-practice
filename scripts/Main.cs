@@ -14,6 +14,8 @@ public partial class Main : Node2D
 	{
 		GetNode<Timer>("MobTimer").Stop();
 		GetNode<Timer>("ScoreTimer").Stop();
+
+		GetNode<Hud>("HUD").ShowGameOver();
 	
 	}
 
@@ -26,6 +28,13 @@ public partial class Main : Node2D
 		var startPostition = GetNode<Marker2D>("StartPosition");
 		player.Start(startPostition.Position);
 
+		var hud = GetNode<Hud>("HUD");
+		hud.UpdateScore(_score);
+		hud.ShowMessage("Get Ready!");
+
+		// Note that for calling Godot-provided methods with strings, we have to use the original Godot snake_case name.
+		GetTree().CallGroup("mobs", Node.MethodName.QueueFree);
+
 		GetNode<Timer>("StartTimer").Start();
 	}
 
@@ -33,6 +42,7 @@ public partial class Main : Node2D
 	private void OnScoreTimerTimeout()
 	{
     _score++;
+	GetNode<Hud>("HUD").UpdateScore(_score);
 	}
 
 
@@ -82,7 +92,6 @@ public partial class Main : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		NewGame();
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
