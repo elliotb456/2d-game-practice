@@ -5,16 +5,23 @@ public partial class Player : Area2D
 {
 	[Signal]
 	public delegate void HitEventHandler(); // Creating the hit signal that the player will send out when in contact with an enemy
-
 	[Export]
     public int Speed { get; set; } = 400; // How fast the player will move (pixels/sec).
 
     public Vector2 ScreenSize; // Size of the game window.
 
+	private CollisionShape2D _collisionShape;
+	private AnimatedSprite2D _animatedSprite;
+
+
+
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		_collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+		_animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+
 		ScreenSize = GetViewportRect().Size;
 		Hide();
 	}
@@ -47,17 +54,14 @@ public partial class Player : Area2D
 		}
 
 
-		// Getting the AnimatedSprite2D node and assigning it to a variable to make it easier to call 
-		var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-
 		if (velocity.Length() > 0)
 		{
 			velocity = velocity.Normalized() * Speed;
-			animatedSprite2D.Play(); // If velocity value greater than 0 (ie. moving) then play the animation
+			_animatedSprite.Play(); // If velocity value greater than 0 (ie. moving) then play the animation
 		}
 		else
 		{
-			animatedSprite2D.Stop(); // else stop the animation
+			_animatedSprite.Stop(); // else stop the animation
 		}
 
 
@@ -72,14 +76,14 @@ public partial class Player : Area2D
 		// Ensuring the correct animations play, and are flipped as needed
 		if (velocity.X != 0)
 		{
-			animatedSprite2D.Animation = "walk";
-			animatedSprite2D.FlipV = false;
-			animatedSprite2D.FlipH = velocity.X < 0;
+			_animatedSprite.Animation = "walk";
+			_animatedSprite.FlipV = false;
+			_animatedSprite.FlipH = velocity.X < 0;
 		}
 		else if (velocity.Y != 0)
 		{
-			animatedSprite2D.Animation = "up"; 
-			animatedSprite2D.FlipV = velocity.Y > 0;
+			_animatedSprite.Animation = "up"; 
+			_animatedSprite.FlipV = velocity.Y > 0;
 		}
 	}
 
@@ -89,7 +93,7 @@ public partial class Player : Area2D
 		Hide(); // Player Disappears after being hit
 		EmitSignal(SignalName.Hit);
 
-		GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+		_collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 	}
 
 
@@ -98,6 +102,6 @@ public partial class Player : Area2D
 	{
 		Position = position;
 		Show();
-		GetNode<CollisionShape2D>("CollisionShape2D").Disabled = false;
+		_collisionShape.Disabled = false;
 	}
 }

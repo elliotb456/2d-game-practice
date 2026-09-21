@@ -6,15 +6,26 @@ public partial class Hud : CanvasLayer
 
 	[Signal]
 	public delegate void StartGameEventHandler();
+	private Label _message;
+	private Timer _messageTimer;
+	private Button _startButton;
+	private Label _score;
 
+
+	public override void _Ready()
+	{
+		_message = GetNode<Label>("Message");
+		_messageTimer = GetNode<Timer>("MessageTimer");
+		_startButton = GetNode<Button>("StartButton");
+		_score = GetNode<Label>("ScoreLabel");
+	}
 
 	public void ShowMessage(string text)
 	{
-		var message = GetNode<Label>("Message");
-		message.Text = text; 
-		message.Show();
+		_message.Text = text; 
+		_message.Show();
 
-		GetNode<Timer>("MessageTimer").Start();
+		_messageTimer.Start();
 	}
 
 
@@ -22,33 +33,31 @@ public partial class Hud : CanvasLayer
 	{
 		ShowMessage("Game Over");
 
-		var messageTimer = GetNode<Timer>("MessageTimer");
-		await ToSignal(messageTimer, Timer.SignalName.Timeout);
+		await ToSignal(_messageTimer, Timer.SignalName.Timeout);
 
-		var message = GetNode<Label>("Message");
-		message.Text = "Dodge the Aliens!";
-		message.Show();
+		_message.Text = "Dodge the Aliens!";
+		_message.Show();
 
 		await ToSignal(GetTree().CreateTimer(1.0), SceneTreeTimer.SignalName.Timeout);
-		GetNode<Button>("StartButton").Show();
+		_startButton.Show();
 	}
 
 
 	public void UpdateScore(int score)
 	{
-		GetNode<Label>("ScoreLabel").Text = score.ToString();
+		_score.Text = score.ToString();
 	}
 
 
 	private void OnStartButtonPressed()
 	{
-    	GetNode<Button>("StartButton").Hide();
+    	_startButton.Hide();
     	EmitSignal(SignalName.StartGame);
 	}
 
 
 	private void OnMessageTimerTimeout()
 	{
-    	GetNode<Label>("Message").Hide();
+    	_message.Hide();
 	}
 }
