@@ -3,21 +3,105 @@ using System;
 
 public partial class Player : Area2D
 {
+	[Signal]
+	public delegate void HitEventHandler(); // Creating the hit signal that the player will send out when in contact with an enemy
 	[Export]
     public int Speed { get; set; } = 400; // How fast the player will move (pixels/sec).
 
     public Vector2 ScreenSize; // Size of the game window.
 
+	private CollisionShape2D _collisionShape;
+	private AnimatedSprite2D _animatedSprite;
+
+
+
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		_collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+		_animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+
 		ScreenSize = GetViewportRect().Size;
+		Hide();
 	}
 
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		var velocity = Vector2.Zero; // The player's movement vector
+
+		// Movement logic checks to determine the players velocity 
+		if (Input.IsActionPressed("move_right"))
+		{
+			velocity.X += 1;
+		}
+
+		if (Input.IsActionPressed("move_left"))
+		{
+			velocity.X -= 1;
+		}
+
+		if (Input.IsActionPressed("move_down"))
+		{
+			velocity.Y += 1; 
+		}
+
+		if (Input.IsActionPressed("move_up"))
+		{
+			velocity.Y -= 1;
+		}
+
+
+		if (velocity.Length() > 0)
+		{
+			velocity = velocity.Normalized() * Speed;
+			_animatedSprite.Play(); // If velocity value greater than 0 (ie. moving) then play the animation
+		}
+		else
+		{
+			_animatedSprite.Stop(); // else stop the animation
+		}
+
+
+		// Update the players position and lock it to the screen
+		Position += velocity * (float)delta;
+		Position = new Vector2(
+			x: Mathf.Clamp(Position.X, 0, ScreenSize.X),
+			y: Mathf.Clamp(Position.Y, 0, ScreenSize.Y)
+		);
+
+
+		// Ensuring the correct animations play, and are flipped as needed
+		if (velocity.X != 0)
+		{
+			_animatedSprite.Animation = "walk";
+			_animatedSprite.FlipV = false;
+			_animatedSprite.FlipH = velocity.X < 0;
+		}
+		else if (velocity.Y != 0)
+		{
+			_animatedSprite.Animation = "up"; 
+			_animatedSprite.FlipV = velocity.Y > 0;
+		}
+	}
+
+	// Function for collision logic for the player
+	public void OnBodyEntered(Node2D body)
+	{
+		Hide(); // Player Disappears after being hit
+		EmitSignal(SignalName.Hit);
+
+		_collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+	}
+
+
+	// Function to reset the player when starting a new game
+	public void Start(Vector2 position)
+	{
+		Position = position;
+		Show();
+		_collisionShape.Disabled = false;
 	}
 }
